@@ -1,0 +1,77 @@
+{
+  "name": "js-starter",
+  "version": "0.0.1",
+  "description": "Custom Javascript and Postgres Boiler plate",
+  "keywords": [
+    "js-custom-template",
+    "boilerplate",
+    "nodejs-starter",
+    "nodejs-template"
+  ],
+  "private": false,
+  "main": "dist/index.js",
+  "directories": {
+    "test": "__tests__"
+  },
+  "scripts": {
+    "create-admin": "node_modules/@babel/node/bin/babel-node.js src/app/scripts/create.first.admin",
+    "migrate": "node_modules/db-migrate/bin/db-migrate up -e production",
+    "test": "nyc mocha --require @babel/register './__tests__/**/**.spec.js'",
+    "test:watch": "mocha --watch",
+    "lint": "eslint \"src/**/*.js\"",
+    "start:dev": "nodemon --exec node_modules/@babel/node/bin/babel-node.js src/index.js",
+    "start": "npm run migrate && node build/index.js",
+    "clean": "rm -rf build && mkdir build",
+    "build-babel": "babel src/ --out-dir build --ignore node_modules,babel.config.js,.github,jest.config.js",
+    "build": "npm run clean && npm run build-babel"
+  },
+  "author": {
+    "name": "Sikiru moshood"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "@sendgrid/mail": "^6.4.0",
+    "axios": "^0.19.0",
+    "bcrypt": "^3.0.6",
+    "bluebird": "^3.5.4",
+    "body-parser": "^1.15.2",
+    "crypto-random-string": "^3.2.0",
+    "db-migrate": "^0.11.11",
+    "db-migrate-pg": "^0.5.1",
+    "express": "^4.17.1",
+    "file-stream-rotator": "0.0.7",
+    "helmet": "^3.3.0",
+    "inquirer": "^7.1.0",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.25.3",
+    "morgan": "^1.7.0",
+    "pg-promise": "^8.5.1",
+    "q": "^1.5.1",
+    "twilio": "^3.32.0",
+    "uuid": "^3.3.2",
+    "winston": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/register": "^7.9.0",
+    "babel-jest": "^25.4.0",
+    "chai": "^4.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-import": "^2.20.2",
+    "jest": "^25.4.0",
+    "mocha": "^7.1.2",
+    "nodemon": "^2.0.3",
+    "nyc": "^15.0.1",
+    "parcel-bundler": "^1.12.4",
+    "sinon": "^5.0.7"
+  },
+  "browserslist": [
+    "last 1 Chrome versions"
+  ]
+}
