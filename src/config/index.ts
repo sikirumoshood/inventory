@@ -4,13 +4,7 @@ import production from './environment/production';
 import staging from './environment/staging';
 
 const defaults = {
-  auth: {
-    subject: 'LoginToken',
-    expiresIn: '720h' // days
-  },
-  paginationLimit: 50,
-  initialization_vector_length: 16,
-  passwordResetTokenExpiresIn: 24 // hrs
+  app_name: 'Inventory service',
 };
 
 // Return configuration based on current environment

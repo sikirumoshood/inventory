@@ -1,6 +1,6 @@
 import express from 'express';
-// Bootstrap express
 import expressConfig from './config/express';
+import logger from './config/logger';
 
 const port = process.env.PORT || 3023;
 
@@ -10,6 +10,6 @@ expressConfig(app);
 
 app.listen(port);
 
-logger.info(`API started on port ${port}`);
+logger.info(`Inventory service started on port ${port}`);
 
 export default app;
