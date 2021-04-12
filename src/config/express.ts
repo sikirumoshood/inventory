@@ -1,7 +1,7 @@
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import logger from './logger';
-
+import invetoryRoutes from '../app/routes/inventory';
 const helmet = require('helmet');
 
 const expressConfig = (app: any) => {
@@ -21,7 +21,7 @@ const expressConfig = (app: any) => {
 // ----------------------- SERVER HEADERS ----------------------
   app.use((req:any, res:any, next:any) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Authorization, Origin, Content-Type, Accept');
     res.setHeader('Access-Control-Allow-Credentials', true);
     next();
@@ -30,7 +30,7 @@ const expressConfig = (app: any) => {
 
 
 // ---------------------- ROUTES --------------------------
-   // app.use('/api/v1/admin', adminRoutes);
+   app.use('/', invetoryRoutes);
 // ------------------------ END OF ROUTES -------------------
   app.use((req:any, res:any) => res.status(404).json({
     message: 'Not Found',

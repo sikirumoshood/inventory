@@ -1,12 +1,14 @@
 import winston from 'winston';
 import config from '../config';
+import moment from 'moment';
 
 const createConsoleTransport = (level: string, handleExceptions: boolean, json: boolean, colorize: boolean ) => {
   const opts = {
     level,
     handleExceptions,
     json,
-    colorize
+    colorize,
+    timestamp: () => `[ ${moment().format('DD-MMM-YYYY, h:mm:ss a')}} ]:`
   };
 
   return new winston.transports.Console(opts);
