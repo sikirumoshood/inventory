@@ -66,5 +66,12 @@ export default {
             updated_at = NOW()
         WHERE
             id = $2
+    `,
+    deleteExpiredInventories: ` 
+        DELETE 
+            FROM 
+                inventories
+        WHERE 
+            expiry < ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
     `
 }
