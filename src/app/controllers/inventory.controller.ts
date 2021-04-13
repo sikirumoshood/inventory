@@ -48,7 +48,7 @@ class InventoryController {
                 return ResponseHelper.Error(res, MESSAGES.BAD_REQUEST)
             }
 
-            const result = await InventoryModel.getQtyOfInventory(itemName);
+            const result = await InventoryModel.getQtyOfInventory(itemName.trim());
     
             return ResponseHelper.Success(res, result);
         }catch(e){
@@ -76,7 +76,7 @@ class InventoryController {
             if(!itemName) {
                 return ResponseHelper.Error(res, MESSAGES.BAD_REQUEST)
             }
-
+            
             const result = await InventoryModel.sellItemQty({itemName, quantity});
             return ResponseHelper.Success(res, result);
         }catch(e){
