@@ -35,11 +35,9 @@ class InventoryModel {
 
     static async addQtyForExistingItem (data: ItemWithId) : Promise<any> {
         try{
-            
-            await db.tx(async (t:any) => {
+
                 const { id: itemId, expiry, quantity } = data;
-                await t.none(query.addInventory, [ itemId, quantity, expiry ]);
-            });
+                await db.none(query.addInventory, [ itemId, quantity, expiry ]);
 
             return true;
         }catch(e){
@@ -65,7 +63,8 @@ class InventoryModel {
 
     static async findItemByName (name: string) : Promise<any> {
         try{
-            const item = await db.oneOrNone(query.getItemByName, [ name ]);
+            let item = null;
+            item = await db.oneOrNone(query.getItemByName, [ name ]);
             return item;
         }catch(e){
             logger.error(`EX::InventoryModel::FindItemByName:: Failed to fetch with the name - [${name}] `, e.message);
@@ -96,14 +95,15 @@ class InventoryModel {
         try{
             const { quantity: qtyToSell, itemName } = data;
             logger.info(`Processing sell request - item [${itemName}] - qty [${qtyToSell}]...`)
-            await db.tx(async (t:any) => {
+            await db.tx(async (t:any) : Promise<any> => {
                 const availableItems = await t.any(query.getAllAvailableItems, [itemName]);
                 const qtyOfAvailableItems = availableItems.reduce((acc: number, curr: any) => Number(curr.quantity) + acc , 0);
                 
-                if(qtyOfAvailableItems > 0 && qtyToSell > qtyOfAvailableItems) {
+                if(qtyToSell > qtyOfAvailableItems) {
                     logger.error(`Quantity of [${itemName}] requested is above the available items - [${qtyOfAvailableItems}]`);
                     throw new Error(ERRORS_TYPES.SELL_REQUEST_ABOVE_LIMIT);
                 }
+                
                 const promises = [];
                 let qtyToSellCopy = qtyToSell;
                 for(const item of availableItems){
@@ -121,8 +121,7 @@ class InventoryModel {
                     promises.push(t.none(query.updateItemQty, [ currentQty, item.inventory_id ]))
                 }
 
-                await Promise.all(promises);
-                logger.info(`Sell request of item [${itemName}] - qty [${qtyToSell}] processed successfully`)
+                return t.batch(promises);
             } );
 
             return {}

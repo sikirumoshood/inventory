@@ -22,7 +22,8 @@ export default {
         INNER JOIN item_types ON inventories.item_id = item_types.id AND item_types.name = $1
         WHERE 
             expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
-        ORDER BY expiry ASC;
+        ORDER BY expiry ASC
+    ;
 
     `,
     getItemByName: `
