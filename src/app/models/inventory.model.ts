@@ -37,8 +37,14 @@ class InventoryModel {
         try{
 
                 const { id: itemId, expiry, quantity } = data;
-                await db.none(query.addInventory, [ itemId, quantity, expiry ]);
-
+                await db.tx(async (t:any) => {
+                    const queries = [];
+                    for(let q = 1; q <= quantity; ++q){
+                        queries.push(t.none(query.addInventory, [ itemId, 1, expiry ]));
+                    }
+                    await t.batch(queries);
+                })
+            
             return true;
         }catch(e){
             logger.error(`EX::InventoryModel::AddQtyForExistingItem:: Failed to add quantity for existing item - [${data.id}] - [${data.quantity}]`, e.message);
@@ -50,8 +56,20 @@ class InventoryModel {
         try{
             await db.tx(async (t:any) => {
                 const { itemName, expiry, quantity } = data;
-                const item = await t.one(query.addNewItem, [ itemName ]);
-                await t.none(query.addInventory, [ item.id, quantity, expiry ]);
+                let item = null;
+               
+                item = await t.one(query.addNewItem, [ itemName ]);
+        
+                if(!item){
+                    throw new Error(`All attempts failed to create this item - [${itemName}]`);
+                }
+
+                const queries = [];
+                for(let q = 1; q <= quantity; ++q){
+                    queries.push(t.none(query.addInventory, [ item.id, 1, expiry ]));
+                }
+                
+                await t.batch(queries);
             });
 
             return true;
@@ -96,32 +114,15 @@ class InventoryModel {
             const { quantity: qtyToSell, itemName } = data;
             logger.info(`Processing sell request - item [${itemName}] - qty [${qtyToSell}]...`)
             await db.tx(async (t:any) : Promise<any> => {
-                const availableItems = await t.any(query.getAllAvailableItems, [itemName]);
-                const qtyOfAvailableItems = availableItems.reduce((acc: number, curr: any) => Number(curr.quantity) + acc , 0);
-                
-                if(qtyToSell > qtyOfAvailableItems) {
+                const qtyOfAvailableItems = await t.one(query.getAllAvailableItems);
+                if(qtyToSell > Number(qtyOfAvailableItems.count)) {
                     logger.error(`Quantity of [${itemName}] requested is above the available items - [${qtyOfAvailableItems}]`);
                     throw new Error(ERRORS_TYPES.SELL_REQUEST_ABOVE_LIMIT);
                 }
-                
-                const promises = [];
-                let qtyToSellCopy = qtyToSell;
-                for(const item of availableItems){
-                    let currentQty:number = Number(item.quantity);
-                    if(qtyToSellCopy === 0) break;
-                    if(currentQty === 0) continue;
-                    if(qtyToSellCopy > currentQty){
-                        qtyToSellCopy -= currentQty;
-                        currentQty = 0;
-                    }else{
-                        currentQty -= qtyToSellCopy;
-                        qtyToSellCopy = 0;
-                        
-                    }
-                    promises.push(t.none(query.updateItemQty, [ currentQty, item.inventory_id ]))
-                }
 
-                return t.batch(promises);
+                // Sell items and remove from stock
+                await t.none(query.sellItems, [itemName, qtyToSell]);
+                return;
             } );
 
             return {}
