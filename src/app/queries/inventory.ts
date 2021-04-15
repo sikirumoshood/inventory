@@ -10,21 +10,15 @@ export default {
         INSERT
             INTO
                 item_types(name)
-        VALUES($1)
-        RETURNING *
+            VALUES($1) ON CONFLICT (name) DO UPDATE SET name=EXCLUDED.name RETURNING id;
     `,
     getAllAvailableItems: `
         SELECT
-            inventories.id AS inventory_id,
-            quantity
+            COUNT(id)
         FROM 
             inventories
-        INNER JOIN item_types ON inventories.item_id = item_types.id AND item_types.name = $1
         WHERE 
-            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
-        ORDER BY expiry ASC
-    ;
-
+            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 );
     `,
     getItemByName: `
         SELECT
@@ -74,5 +68,24 @@ export default {
                 inventories
         WHERE 
             expiry < ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
+    `,
+    sellItems: `
+    LOCK TABLE inventories IN SHARE ROW EXCLUSIVE MODE;
+    DELETE
+        FROM
+        inventories
+    WHERE
+        id IN (
+            SELECT
+                inventories.id 
+            FROM 
+                inventories
+            INNER JOIN item_types ON inventories.item_id = item_types.id
+            WHERE 
+                item_types.name = $1
+            AND 
+                expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
+            LIMIT $2
+        );
     `
 }

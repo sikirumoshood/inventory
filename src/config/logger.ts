@@ -37,7 +37,8 @@ const loggerInit = (env: string) => {
     case 'test':
       ret = new winston.Logger({
         transports: [
-          createConsoleTransport('debug', true, false, true)
+          createConsoleTransport('debug', true, false, true),
+          createFileTransport('info', 'server.log', true, false, true, 5242880, 50)
         ],
         exitOnError: false
       });
