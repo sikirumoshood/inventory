@@ -4,6 +4,7 @@ import ValidationHelper from "../helpers/validation.helper";
 import InventoryModel from "../models/inventory.model";
 import MESSAGES from '../utils/messages';
 import ERROR_TYPES from '../utils/error.types';
+import ErrorUtils from "../utils/error.util";
 
 class InventoryController {
     static async add (req: any, res: any) : Promise<any> {
@@ -12,7 +13,6 @@ class InventoryController {
             const { expiry = null, quantity = null } = req.body;
             const { itemName } = req.params
 
-            // TODO item check [remove]: Can this route be accessed without item path ???
             if(!expiry || !quantity || !itemName) {
                 return ResponseHelper.Error(res, MESSAGES.CANNOT_ADD_ITEM_QUANTITY)
             }
@@ -43,7 +43,6 @@ class InventoryController {
             logger.info('Incoming request inventory.controller.ts');
             const { itemName } = req.params
 
-            // TODO [remove]: Can this route be accessed without item path ???
             if(!itemName) {
                 return ResponseHelper.Error(res, MESSAGES.BAD_REQUEST)
             }
@@ -72,7 +71,6 @@ class InventoryController {
             
             const { itemName } = req.params
 
-            // TODO [remove]: Can this route be accessed without item path ???
             if(!itemName) {
                 return ResponseHelper.Error(res, MESSAGES.BAD_REQUEST)
             }
@@ -81,8 +79,9 @@ class InventoryController {
             return ResponseHelper.Success(res, result);
         }catch(e){
             logger.error('::EX::InventoryController::Add:: Error occured while pricessing request', e.message);
-            if(e.message === ERROR_TYPES.SELL_REQUEST_ABOVE_LIMIT){
-                return ResponseHelper.Error(res, MESSAGES.MAXIMUM_SALE_REACHED);
+            const message = ErrorUtils.handleSaleError(e);
+            if(message !== 'unknown'){
+                return ResponseHelper.Error(res, message);
             }
             return ResponseHelper.Error(res, MESSAGES.INTERNAL_ERROR)
         }
