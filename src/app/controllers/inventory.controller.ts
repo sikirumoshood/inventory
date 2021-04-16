@@ -3,10 +3,15 @@ import ResponseHelper from "../helpers/response.helper";
 import ValidationHelper from "../helpers/validation.helper";
 import InventoryModel from "../models/inventory.model";
 import MESSAGES from '../utils/messages';
-import ERROR_TYPES from '../utils/error.types';
 import ErrorUtils from "../utils/error.util";
 
 class InventoryController {
+    /***
+     * @description Adds adds a new item to the inventories table.
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Object}
+     */
     static async add (req: any, res: any) : Promise<any> {
         try{
             logger.info('Incoming request inventory.controller.ts');
@@ -38,6 +43,13 @@ class InventoryController {
         }
     }
 
+
+    /***
+     * @description Retrieves inventory information
+     * @param {Object} req
+     * @param {Object} res 
+     * @returns {Object}
+     */
     static async get (req: any, res: any) : Promise<any> {
         try{
             logger.info('Incoming request inventory.controller.ts');
@@ -56,6 +68,13 @@ class InventoryController {
         }
     }
 
+
+    /***
+     * @description Sells an item by reducting its entries in the inventory table
+     * @param {Object} req
+     * @param {Object} res 
+     * @returns {Object}
+     */
     static async sell (req: any, res: any) : Promise<any> {
         try{
             logger.info('Incoming request inventory.controller.ts');

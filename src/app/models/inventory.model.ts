@@ -2,15 +2,13 @@ import logger from '../../config/logger';
 import db from '../database';
 import query from '../queries/inventory'
 import { Item, ItemWithId, QuantityResult, Empty, SellRequestData } from '../types/intenvory.types'
-import ERRORS_TYPES from '../utils/error.types';
-
-/**
- * @description This class is responsible for peforming CRUD operations
- * on the inventory table.
- * 
- */
 
 class InventoryModel {
+    /***
+     * @description Saves a new item into the inventrories table
+     * @param {Item} data 
+     * @returns {Empty}
+     */
     static async add (data: Item) : Promise<Empty> {
         try{
             const { itemName } = data;
@@ -33,6 +31,13 @@ class InventoryModel {
         }
     }
 
+
+    /***
+     * @description Adds only the suplied quantity of items to the inventories table
+     * when the inventory type already exists in the database
+     * @param {ItemWithId} data 
+     * @returns {boolean}
+     */
     static async addQtyForExistingItem (data: ItemWithId) : Promise<any> {
         try{
 
@@ -52,6 +57,12 @@ class InventoryModel {
         }
     }
 
+    /**
+     * @description Adds a new item and its quantity. This is called when we know the item has
+     * never been created. Item has never been in stock
+     * @param {Item} data 
+     * @returns {boolean}
+     */
     static async addQtyForNewItem (data: Item) : Promise<any> {
         try{
             await db.tx(async (t:any) => {
@@ -79,6 +90,11 @@ class InventoryModel {
         }
     }
 
+    /**
+     * @description Finds and item with the supplied name
+     * @param {string} name 
+     * @returns {Object} item
+     */
     static async findItemByName (name: string) : Promise<any> {
         try{
             let item = null;
@@ -90,6 +106,13 @@ class InventoryModel {
         }
     } 
 
+
+    /**
+     * @description Fetches the quantity of item remaining in the database
+     * as of the time of call
+     * @param {string} itemName
+     * @returns {QuantityResult}
+     */
     static async getQtyOfInventory (itemName:string) : Promise<QuantityResult> {
         try{
 
@@ -109,6 +132,11 @@ class InventoryModel {
         }
     }
 
+    /**
+     * @description This sells out a certain quantity of item by reducing its entry in the database
+     * @param {SellRequestData} data 
+     * @returns {Empty}
+     */
     static async sellItemQty (data: SellRequestData) : Promise<Empty> {
         try{
             const { quantity: qtyToSell, itemName } = data;
