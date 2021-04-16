@@ -113,18 +113,9 @@ class InventoryModel {
         try{
             const { quantity: qtyToSell, itemName } = data;
             logger.info(`Processing sell request - item [${itemName}] - qty [${qtyToSell}]...`)
-            await db.tx(async (t:any) : Promise<any> => {
-                const qtyOfAvailableItems = await t.one(query.getAllAvailableItems);
-                if(qtyToSell > Number(qtyOfAvailableItems.count)) {
-                    logger.error(`Quantity of [${itemName}] requested is above the available items - [${qtyOfAvailableItems}]`);
-                    throw new Error(ERRORS_TYPES.SELL_REQUEST_ABOVE_LIMIT);
-                }
-
-                // Sell items and remove from stock
-                await t.none(query.sellItems, [itemName, qtyToSell]);
-                return;
-            } );
-
+            // Sell items and remove from stock
+            await db.oneOrNone(query.sellItems, [itemName, qtyToSell]);
+            logger.info(`Successfully sold - item [${itemName}] - qty [${qtyToSell}]...`)
             return {}
             
         }catch(e){
