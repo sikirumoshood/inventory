@@ -17,8 +17,11 @@ export default {
             COUNT(id)
         FROM 
             inventories
+        INNER JOIN item_types ON inventories.item_id = item_types.id
         WHERE 
-            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 );
+            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
+        AND 
+            item_types.name = $1
     `,
     getItemByName: `
         SELECT
@@ -70,22 +73,6 @@ export default {
             expiry < ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
     `,
     sellItems: `
-    LOCK TABLE inventories IN SHARE ROW EXCLUSIVE MODE;
-    DELETE
-        FROM
-        inventories
-    WHERE
-        id IN (
-            SELECT
-                inventories.id 
-            FROM 
-                inventories
-            INNER JOIN item_types ON inventories.item_id = item_types.id
-            WHERE 
-                item_types.name = $1
-            AND 
-                expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
-            LIMIT $2
-        );
+        SELECT sell_item($1, $2);
     `
 }
