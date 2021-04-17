@@ -22,10 +22,10 @@ switch (ENV) {
     ENV_CONFIG = Object.assign(defaults, production);
     break;
   case 'staging':
-    ENV_CONFIG = Object.assign(defaults, test);
+    ENV_CONFIG = Object.assign(defaults, staging);
     break;
   case 'test':
-    ENV_CONFIG = Object.assign(defaults, staging);
+    ENV_CONFIG = Object.assign(defaults, test);
     break;
   default: break;
 }
