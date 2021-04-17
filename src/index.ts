@@ -1,21 +1,24 @@
 import express from 'express';
 import expressConfig from './config/express';
+import config from './config';
+import logger from './config/logger';
 
 const os = require("os");
 const cluster = require("cluster");
 const port = process.env.PORT || 3023;
-
+let server: any = null;
 const startNewApp = (clusterSize:number): any => {
     const app = express();
     expressConfig(app)
-    app.listen(port,function () { console.log(`Inventory service listening on port ${port} with the ${clusterSize > 1 ? 'multiple' : 'single' } worker ${process.pid}`)})
+    server = app.listen(port,function () { logger.info(`Inventory service listening on port ${port} with the ${clusterSize > 1 ? 'multiple' : 'single' } worker ${process.pid}`)})
     return app;
 };
 
 const clusterWorkerSize:number = os.cpus().length
 let app = null;
 
-if (clusterWorkerSize > 2) {
+// @ts-ignore
+if (clusterWorkerSize > 2 && config.ENVIRONMENT !== 'test' ) {
   if (cluster.isMaster) {
     // Distribute load accross cpu cores
     for (let i=0; i < clusterWorkerSize - 1; i++) {
@@ -29,8 +32,8 @@ if (clusterWorkerSize > 2) {
     app = startNewApp(clusterWorkerSize);
   }
 } else {
-    app = startNewApp(clusterWorkerSize);
+    app = startNewApp(1);
 };
 
 
-export default app;
+export { app, server };
