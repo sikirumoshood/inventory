@@ -15,11 +15,12 @@
   },
   "scripts": {
     "migrate": "node_modules/db-migrate/bin/db-migrate up -e production",
-    "test": "nyc mocha --require @babel/register './__tests__/**/**.spec.js'",
-    "test:watch": "mocha --watch",
+    "pre-test": "db-migrate reset && db-migrate up && npm run build",
+    "start-mocha": "nyc --reporter=text --reporter=html mocha './dist/__tests__/**/**.spec.js'",
+    "test": "npm run pre-test && npm run start-mocha",
     "lint": "eslint \"src/**/*.ts\"",
     "start:dev": "source .env && nodemon src/index.ts",
-    "start": "npm run migrate && node dist/index.js",
+    "start": "npm run migrate && npm run start-node",
     "build": "tsc -p .",
     "remove-expired-inventory": "node dist/app/crons/expired.inventory.cron.js",
     "start:dev:all": "npm-run-all -p start:dev remove-expired-inventory"
@@ -30,6 +31,7 @@
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@types/mocha": "^8.2.2",
     "@types/node-cron": "^2.0.3",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
@@ -46,9 +48,13 @@
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.32",
+    "@types/chai": "^4.2.16",
     "@types/express": "^4.17.11",
     "@types/morgan": "^1.9.2",
     "@types/node": "^14.14.37",
+    "@types/request-promise-native": "^1.0.17",
+    "@types/rewire": "^2.5.28",
+    "@types/sinon": "^10.0.0",
     "chai": "^4.3.4",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.2.1",
@@ -56,6 +62,7 @@
     "mocha": "^7.2.0",
     "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
+    "request-promise-native": "^1.0.9",
     "sinon": "^5.1.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"

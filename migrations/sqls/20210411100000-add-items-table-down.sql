@@ -1,2 +1,2 @@
 /* Replace with your SQL commands */
-DROP TABLE IF EXISTS items_types;
+DROP TABLE IF EXISTS item_types;
