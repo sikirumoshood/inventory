@@ -8,7 +8,7 @@ Create the database of your choice
 
 Set the following environment variables:
 ```
-cexport DATABASE_URL=postgres://{db_username}:{db_password}@{host}:{port}/{db_name}
+export DATABASE_URL=postgres://{db_username}:{db_password}@{host}:{port}/{db_name}
 export PORT=8990
 export NODE_ENV=development
 ```
