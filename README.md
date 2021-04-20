@@ -21,5 +21,18 @@ Run the command below to start the service
 
 ``` npm run start:dev:all ```
 
+# Test
+To run the test ensure your the correct ```environment``` is set to ```test``` and we have a test database
+created.
+
+```
+export DATABASE_URL=postgres://{db_username}:{db_password}@{host}:{port}/{test_db_name}
+export PORT=3023
+export NODE_ENV=test
+```
+
+Run the command below
+```npm run test```
+
 # Documentation
 Please find the postman documentation here: https://documenter.getpostman.com/view/10001732/TzJuAy8v
