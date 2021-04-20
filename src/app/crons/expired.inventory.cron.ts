@@ -18,7 +18,6 @@ class ExpiredInventoryCron {
     }
 
     run () : void {
-        logger.info(':::: Preparing to delete expired inventories.... ::::::');
         db.none(query.deleteExpiredInventories)
             .then( () => logger.info(':::: Inventories deleted successfully, waiting for the next schedule ::::::')) 
             .catch((e:any) => console.log(e))
@@ -32,5 +31,5 @@ class ExpiredInventoryCron {
 
 // Start cron
 // @ts-ignore
-new ExpiredInventoryCron(config.EXPIRED_INVENTORY_REMOVAL_INTERVAL, CronScheduler, query.deleteExpiredInventories).start();
+new ExpiredInventoryCron(config.EXPIRED_INVENTORY_REMOVAL_INTERVAL, CronScheduler).start();
 
