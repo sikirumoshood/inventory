@@ -1,0 +1,2 @@
+--file ./__tests__/_setup.spec.js
+--file ./__tests__/~teardown.spec.js

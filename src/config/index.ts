@@ -4,13 +4,7 @@ import production from './environment/production';
 import staging from './environment/staging';
 
 const defaults = {
-  auth: {
-    subject: 'LoginToken',
-    expiresIn: '720h' // days
-  },
-  paginationLimit: 50,
-  initialization_vector_length: 16,
-  passwordResetTokenExpiresIn: 24 // hrs
+  app_name: 'Inventory service',
 };
 
 // Return configuration based on current environment
@@ -28,10 +22,10 @@ switch (ENV) {
     ENV_CONFIG = Object.assign(defaults, production);
     break;
   case 'staging':
-    ENV_CONFIG = Object.assign(defaults, test);
+    ENV_CONFIG = Object.assign(defaults, staging);
     break;
   case 'test':
-    ENV_CONFIG = Object.assign(defaults, staging);
+    ENV_CONFIG = Object.assign(defaults, test);
     break;
   default: break;
 }
