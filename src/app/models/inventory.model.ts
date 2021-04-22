@@ -151,7 +151,8 @@ class InventoryModel {
             const { quantity: qtyToSell, itemName } = data;
             logger.info(`Processing sell request - item [${itemName}] - qty [${qtyToSell}]...`)
             // Sell items and remove from stock
-            await db.oneOrNone(query.sellItems, [itemName, qtyToSell]);
+            const item = await InventoryModel.findItemByName(itemName);
+            await db.oneOrNone(query.sellItems, [ Number(item.id), qtyToSell]);
             logger.info(`Successfully sold - item [${itemName}] - qty [${qtyToSell}]...`)
             return {}
             

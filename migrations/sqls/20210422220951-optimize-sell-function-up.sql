@@ -1,4 +1,6 @@
 /* Replace with your SQL commands */
+DROP FUNCTION sell_item(character varying,numeric);
+
 CREATE OR REPLACE function sell_item(item numeric, qty numeric)
 RETURNS VOID
 language plpgsql
