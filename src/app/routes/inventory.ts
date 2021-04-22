@@ -7,6 +7,11 @@ Router.get(
     (req:any, res:any) => res.status(200).json({msg:'Pong!'})
 );
 
+Router.get(
+    '/', 
+    (req:any, res:any) => res.status(200).json({msg:'Api Works!'})
+);
+
 Router.post(
     '/:itemName/add',
     InventoryController.add
