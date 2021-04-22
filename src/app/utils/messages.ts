@@ -7,5 +7,6 @@ export default {
     ZERO_QUANTITY: 'Quantity of zero cannot be sold.',
     INTERNAL_ERROR: 'Something went wrong we are looking into it.',
     MAXIMUM_SALE_REACHED: 'Cannot process sell request, the quantity provided is above the stock limit.',
-    ITEM_NOT_IN_STOCK: 'This item is currently not in stock.'
+    ITEM_NOT_IN_STOCK: 'This item is currently not in stock.',
+    ITEM_NOT_FOUND: 'This item cannot be found.'
 };

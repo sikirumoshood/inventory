@@ -115,15 +115,24 @@ class InventoryModel {
      */
     static async getQtyOfInventory (itemName:string) : Promise<QuantityResult> {
         try{
+            const item = await InventoryModel.findItemByName(itemName);
 
-            const result = await db.oneOrNone(query.getInventoryQuantity, [ itemName ]);
-            if(!result || result.quantity === null || (result.quantity && result.quantity == 0) || result.valid_till === null){
+            if(!item){
+                return { quantity:0, validTill: null };
+            }
+            
+            let { quantity: qty } = await db.oneOrNone(query.getInventoryQuantity, [ item.id ]);
+            const { valid_till:validTill } = await db.oneOrNone(query.getInventoryValidity, [ item.id ]);
+            
+            if(!qty || !validTill){
                 return { quantity:0 , validTill: null }
             }
 
-            result.quantity = Number(result.quantity);
-            result.validTill = Number(result.valid_till);
-            delete result.valid_till;
+            const result = {
+                quantity: Number(qty),
+                validTill: Number(validTill)
+            };
+
             return result;
             
         }catch(e){
