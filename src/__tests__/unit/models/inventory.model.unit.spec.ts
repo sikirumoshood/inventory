@@ -247,7 +247,9 @@ describe('Unit Test: Inventory Model', () => {
             try{
                 const data: SellRequestData = { quantity: 10, itemName: 'shoes'} ;
                 const expectedResponse: Empty = {};
-                sandbox.stub(db, 'oneOrNone').returns(Promise.resolve());
+                const oneOrNoneStub = sandbox.stub(db, 'oneOrNone');
+                oneOrNoneStub.onCall(0).returns(Promise.resolve({ id: 10044}));
+                oneOrNoneStub.onCall(1).returns(Promise.resolve({}));
                 const result = await InventoryModel.sellItemQty(data);
                 expect(result).to.be.an('object');
                 expect(result).to.eql(expectedResponse);
