@@ -197,9 +197,12 @@ describe('Unit Test: Inventory Model', () => {
                 const itemName: string = 'shoes' ;
                 const expectedResponse:object = {
                     quantity: 20,
-                    valid_till: '1619269052000'
+                    validTill: 1619269052000
                 }
-                sandbox.stub(db, 'oneOrNone').returns(Promise.resolve(expectedResponse))
+                const oneOrNoneStub = sandbox.stub(db, 'oneOrNone');
+                oneOrNoneStub.onCall(0).returns(Promise.resolve({id: 1044}));
+                oneOrNoneStub.onCall(1).returns(Promise.resolve({quantity: 20}));
+                oneOrNoneStub.onCall(2).returns(Promise.resolve({valid_till: '1619269052000'}));
                 const result = await InventoryModel.getQtyOfInventory(itemName);
                 expect(result).to.be.an('object');
                 expect(result).to.eql(expectedResponse);
