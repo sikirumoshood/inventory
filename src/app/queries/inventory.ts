@@ -34,27 +34,24 @@ export default {
     `,
     getInventoryQuantity: `
         SELECT
-            (
-                SELECT
-                    COALESCE(SUM(quantity), 0) AS quantity
-                FROM
-                    inventories
-                INNER JOIN item_types ON inventories.item_id = item_types.id AND item_types.name = $1
-                WHERE 
-                    expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
-                GROUP BY item_id
-            ),
-            (
-                SELECT
-                    MIN(expiry) as valid_till
-                FROM
-                    inventories
-                INNER JOIN item_types ON inventories.item_id = item_types.id AND item_types.name = $1
-                WHERE 
-                    expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
-                GROUP BY item_id
-            
-            );
+            COALESCE(SUM(quantity), 0) AS quantity
+        FROM
+            inventories
+        WHERE 
+            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
+        AND
+            item_id = $1
+        
+    `,
+    getInventoryValidity: ` 
+        SELECT
+            MIN(expiry) as valid_till
+        FROM
+            inventories
+        WHERE 
+            expiry > ( EXTRACT(EPOCH FROM NOW() AT TIME ZONE 'UTC') * 1000 )
+        AND
+            item_id = $1
     `,
     updateItemQty: `
         UPDATE
